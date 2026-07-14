@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Smart Complaint Management System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #eef4ff, #f8fbff);
+            color: #1f2937;
+        }
+
+        header {
+            background: #1d4ed8;
+            color: white;
+            padding: 24px 16px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        header p {
+            margin: 0;
+            opacity: 0.95;
+        }
+
+        .container {
+            width: 94%;
+            max-width: 1200px;
+            margin: 28px auto;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 22px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #1d4ed8;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .hint-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: 0.2s ease;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .secondary-btn {
+            background: #0f172a;
+        }
+
+        .secondary-btn:hover {
+            background: #020617;
+        }
+
+        .message {
+            margin-top: 16px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .complaint-list {
+            max-height: 650px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .complaint-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 14px;
+            background: #fafcff;
+        }
+
+        .complaint-item h3 {
+            margin: 0 0 8px;
+            color: #0f172a;
+            font-size: 18px;
+        }
+
+        .complaint-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .resolved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .medium {
+            background: #fde68a;
+            color: #92400e;
+        }
+
+        .low {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .cat {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .date-text {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #6b7280;
+            padding: 20px;
+        }
+
+        @media (max-width: 950px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Smart Complaint Management System</h1>
+    <p>User Complaint Submission Portal</p>
+</header>
+
+<div class="container">
+    <div class="layout">
+        <div class="card">
+            <h2>Submit a Complaint</h2>
+            <p class="subtitle">Enter complaint details below. Category is suggested automatically and can also be selected manually.</p>
+
+            <div class="hint-box">
+                Example keywords:
+                <b>wifi/internet</b> → IT,
+                <b>water/leakage/light/fan</b> → Maintenance,
+                <b>food/mess/canteen</b> → Mess,
+                <b>class/teacher/exam</b> → Academic
+            </div>
+
+            <form id="complaintForm">
+                <label for="title">Complaint Title</label>
+                <input type="text" id="title" placeholder="Enter complaint title" required />
+
+                <label for="description">Complaint Description</label>
+                <textarea id="description" placeholder="Describe the issue clearly..." required></textarea>
+
+                <div class="grid">
+                    <div>
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option value="">Select category</option>
+                            <option value="IT">IT</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Mess">Mess</option>
+                            <option value="Academic">Academic</option>
+                            <option value="Hostel">Hostel</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="suggestedCategory">Suggested Category</label>
+                        <input type="text" id="suggestedCategory" placeholder="Auto-detected category" readonly />
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="submit">Submit Complaint</button>
+                    <button type="button" class="secondary-btn" onclick="goToAdmin()">Open Admin Panel</button>
+                </div>
+            </form>
+
+            <div id="message" class="message"></div>
+        </div>
+
+        <div class="card">
+            <h2>Submitted Complaints</h2>
+            <p class="subtitle">All complaints are visible here and update automatically after new submission.</p>
+
+            <div id="complaintList" class="complaint-list"></div>
+            <div id="emptyState" class="empty-state" style="display:none;">No complaints submitted yet.</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const titleInput = document.getElementById('title');
+    const descriptionInput = document.getElementById('description');
+    const categorySelect = document.getElementById('category');
+    const suggestedCategoryInput = document.getElementById('suggestedCategory');
+    const messageBox = document.getElementById('message');
+    const complaintList = document.getElementById('complaintList');
+    const emptyState = document.getElementById('emptyState');
+
+    function detectCategory(text) {
+        const value = text.toLowerCase();
+
+        if (
+            value.includes('wifi') ||
+            value.includes('internet') ||
+            value.includes('network') ||
+            value.includes('computer') ||
+            value.includes('printer') ||
+            value.includes('software') ||
+            value.includes('system')
+        ) return 'IT';
+
+        if (
+            value.includes('water') ||
+            value.includes('leak') ||
+            value.includes('leakage') ||
+            value.includes('pipe') ||
+            value.includes('electricity') ||
+            value.includes('light') ||
+            value.includes('fan') ||
+            value.includes('switch') ||
+            value.includes('repair') ||
+            value.includes('cleaning')
+        ) return 'Maintenance';
+
+        if (
+            value.includes('food') ||
+            value.includes('mess') ||
+            value.includes('canteen') ||
+            value.includes('meal') ||
+            value.includes('breakfast') ||
+            value.includes('lunch') ||
+            value.includes('dinner')
+        ) return 'Mess';
+
+        if (
+            value.includes('class') ||
+            value.includes('teacher') ||
+            value.includes('faculty') ||
+            value.includes('lecture') ||
+            value.includes('assignment') ||
+            value.includes('exam') ||
+            value.includes('academic') ||
+            value.includes('timetable')
+        ) return 'Academic';
+
+        if (
+            value.includes('hostel') ||
+            value.includes('room') ||
+            value.includes('warden') ||
+            value.includes('bed') ||
+            value.includes('washroom')
+        ) return 'Hostel';
+
+        if (
+            value.includes('bus') ||
+            value.includes('transport') ||
+            value.includes('vehicle') ||
+            value.includes('driver')
+        ) return 'Transport';
+
+        return 'Other';
+    }
+
+    function updateSuggestedCategory() {
+        const combinedText = `${titleInput.value} ${descriptionInput.value}`.trim();
+
+        if (!combinedText) {
+            suggestedCategoryInput.value = '';
+            return;
+        }
+
+        const detected = detectCategory(combinedText);
+        suggestedCategoryInput.value = detected;
+
+        if (!categorySelect.value) {
+            categorySelect.value = detected;
+        }
+    }
+
+    titleInput.addEventListener('input', updateSuggestedCategory);
+    descriptionInput.addEventListener('input', updateSuggestedCategory);
+
+    function showMessage(text, type) {
+        messageBox.textContent = text;
+        messageBox.className = `message ${type}`;
+        messageBox.style.display = 'block';
+    }
+
+    function goToAdmin() {
+        window.location.href = '/admin.html';
+    }
+
+    function statusBadge(status) {
+        const s = (status || '').toLowerCase();
+        if (s === 'resolved') {
+            return `<span class="badge resolved">${status}</span>`;
+        }
+        return `<span class="badge pending">${status || 'Pending'}</span>`;
+    }
+
+    function priorityBadge(priority) {
+        const p = (priority || '').toLowerCase();
+        if (p === 'high') return `<span class="badge high">${priority}</span>`;
+        if (p === 'medium') return `<span class="badge medium">${priority}</span>`;
+        return `<span class="badge low">${priority || 'Low'}</span>`;
+    }
+
+    function categoryBadge(category) {
+        return `<span class="badge cat">${category || 'Other'}</span>`;
+    }
+
+    function formatDate(dateValue) {
+        if (!dateValue) return '-';
+        try {
+            return new Date(dateValue).toLocaleString();
+        } catch {
+            return dateValue;
+        }
+    }
+
+    function renderComplaints(data) {
+        complaintList.innerHTML = '';
+
+        if (!data || data.length === 0) {
+            emptyState.style.display = 'block';
+            return;
+        }
+
+        emptyState.style.display = 'none';
+
+        data.forEach(c => {
+            const item = document.createElement('div');
+            item.className = 'complaint-item';
+            item.innerHTML = `
+                <h3>${c.title || ''}</h3>
+                <div class="complaint-meta">
+                    ${statusBadge(c.status)}
+                    ${priorityBadge(c.priority)}
+                    ${categoryBadge(c.category)}
+                </div>
+                <div>${c.description || ''}</div>
+                <div class="date-text">Created At: ${formatDate(c.createdAt)}</div>
+            `;
+            complaintList.appendChild(item);
+        });
+    }
+
+    async function loadComplaints() {
+        try {
+            const res = await fetch('/complaints');
+            if (!res.ok) {
+                throw new Error(`Failed with status ${res.status}`);
+            }
+            const data = await res.json();
+            renderComplaints(data);
+        } catch (err) {
+            console.error(err);
+            showMessage('Could not load complaints.', 'error');
+        }
+    }
+
+    document.getElementById('complaintForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const complaint = {
+            title: titleInput.value.trim(),
+            description: descriptionInput.value.trim(),
+            category: categorySelect.value
+        };
+
+        try {
+            const res = await fetch('/complaints', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(complaint)
+            });
+
+            if (!res.ok) {
+                throw new Error(`Request failed with status ${res.status}`);
+            }
+
+            const savedComplaint = await res.json();
+
+            showMessage('Complaint submitted successfully.', 'success');
+
+            
+            const currentItems = await fetch('/complaints');
+            const updatedData = await currentItems.json();
+            renderComplaints(updatedData);
+
+            document.getElementById('complaintForm').reset();
+            suggestedCategoryInput.value = '';
+        } catch (err) {
+            console.error(err);
+            showMessage('Complaint submission failed. Please try again.', 'error');
+        }
+    });
+
+    loadComplaints();
+</script>
+</body>
+</html>
