@@ -31,4 +31,3 @@ A simple minor-project-ready complaint management system using:
 - JDBC URL: `jdbc:h2:mem:complaintdb`
 - Username: `sa`
 - Password: leave blank
-echo "# Smart-Complaint-Management-System"
